@@ -153,6 +153,34 @@ Use different inputs:
 - Sarcastic or indirect phrases
 - Long text paragraphs
 - Empty input or gibberish
+  
+## Some testing results
+<img width="634" height="400" alt="Screenshot 2025-07-11 230254" src="https://github.com/user-attachments/assets/a2e9894d-c029-47b9-a74e-7ead38a80f27" />
+
+<img width="634" height="487" alt="Screenshot 2025-07-11 230315" src="https://github.com/user-attachments/assets/2204a4a8-91bb-45e1-a710-0c8d980609eb" />
+
+<img width="1343" height="625" alt="Screenshot 2025-07-11 230430" src="https://github.com/user-attachments/assets/aab22242-4cb4-489d-b88b-e2fc8eda317e" />
+
+# 📊 Results Analysis
+
+Our initial project proposal aimed to create a hate speech detection system that is accurate, accessible, and practical for both users and moderators. We successfully met most of the defined objectives, as described below:
+
+## ✅ Achieved Objectives
+
+| Objective                              | Status    | Notes                                                                                     |
+|--------------------------------------|-----------|-------------------------------------------------------------------------------------------|
+| Develop a functional web platform for users       | ✅ Achieved | Users can input any text and receive instant feedback on whether it is hate speech or not. |
+| Build a moderator dashboard           | ✅ Achieved | Moderators can review flagged content.             |
+| Integrate real-time Chrome extension  | ✅ Achieved | Users can highlight text on any website and instantly analyze it via the extension.       |
+| Deploy and test machine learning model| ✅ Achieved | The hate speech classifier returns results in a short time on average.                   |
+| Test the system under different input types and environments | ✅ Achieved | Testing included normal text, hate speech, and sarcastic cases. |
+
+## ⚠️ Missed / Partially Achieved Objectives
+
+| Objective                  | Status               | Explanation                                                                                                          |
+|----------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------|
+| Sarcasm detection | ❌ Not achieved      | It's still tricky when It comes to sarcastic/joke/edge cases. The model is flagging sarcasm as hate speech, and the next step is working on improving that particular functionality. |
+
 
 ---
 
