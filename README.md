@@ -56,6 +56,7 @@ project/
 │   ├── icon.png
 │   └── content.js
 │   ├── background.js
+├── screenshots/
 ```
 
 ---
