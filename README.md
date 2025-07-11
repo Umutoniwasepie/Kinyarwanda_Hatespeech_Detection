@@ -24,7 +24,7 @@ project/
 |── Procfile
 ├── requirements.txt
 ├── .
-|── css/
+|── static/css
 |    ├── dashboard.css
 |    ├── index.css
 |    ├── login.css
@@ -134,6 +134,25 @@ Visit the app at `http://localhost:5000` (default Flask port).
 - **Feature Extraction**: TF-IDF (1–3 grams)
 - **Accuracy**: ~95% on test data
 - **Classes**: `hate`, `offensive`, `normal`
+
+---
+
+## Demo Video
+Watch the 5-minute demo [here](video-link).
+
+## Deployed App
+Access the live tool: [Website URL](https://kinyarwanda-hatespeech-detection.onrender.com/)
+
+---
+
+🧪 Testing Instructions
+
+Use different inputs:
+- Normal text
+- Obvious hate speech
+- Sarcastic or indirect phrases
+- Long text paragraphs
+- Empty input or gibberish
 
 ---
 
