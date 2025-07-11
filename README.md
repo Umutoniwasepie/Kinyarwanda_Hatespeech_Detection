@@ -145,7 +145,7 @@ Access the live tool: [Website URL](https://kinyarwanda-hatespeech-detection.onr
 
 ---
 
-🧪 Testing Instructions
+## 🧪 Testing Instructions
 
 Use different inputs:
 - Normal text
