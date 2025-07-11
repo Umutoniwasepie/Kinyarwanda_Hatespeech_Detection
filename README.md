@@ -138,7 +138,7 @@ Visit the app at `http://localhost:5000` (default Flask port).
 ---
 
 ## Demo Video
-Watch the 5-minute demo [here](video-link).
+Watch the 5-minute demo [here](https://screenrec.com/share/lrk6diKSvR).
 
 ## Deployed App
 Access the live tool: [Website URL](https://kinyarwanda-hatespeech-detection.onrender.com/)
