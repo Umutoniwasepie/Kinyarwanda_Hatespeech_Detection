@@ -1,0 +1,20 @@
+.env
+flask_session/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.log
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Miscellaneous
+*.DS_Store
+*.idea/
+*.vscode/

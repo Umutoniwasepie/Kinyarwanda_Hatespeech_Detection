@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <title>Dashboard - Kinyarwanda Hate Speech Detection</title>
+</head>
+<body>
+  <div class="bg-animation"></div>
+  <nav>
+    <div class="nav-container">
+      <div class="logo">KinyaAI</div>
+      <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Welcome Section -->
+  <div class="container">
+    <div class="welcome-section fade-in">
+      <div class="welcome-text">Welcome back,</div>
+      <div class="user-name">{{ current_user.full_name }}</div>
+    </div>
+
+    <div class="main-content">
+      <!-- Analysis Section -->
+      <div class="analysis-section fade-in">
+        <h2 class="section-title">🔍 Analyze Your Content</h2>
+        <p class="section-description">
+          Enter your Kinyarwanda text below to analyze it for potential hate speech or offensive content.
+          Our AI will provide instant results with detailed explanations.
+        </p>
+
+        <form method="POST" id="analysisForm">
+          <div class="form-group">
+            <label for="text" class="form-label">Text to Analyze</label>
+            <textarea name="tweet" id="text" class="form-textarea"
+              placeholder="Andika umwandiko wawe mu Kinyarwanda hano... (Write your Kinyarwanda text here...)"
+              required>{{ tweet }}</textarea>
+          </div>
+          <button type="submit" class="analyze-btn" id="analyzeBtn">
+            <span id="btnText">✨ Analyze Text</span>
+            <span id="btnLoading" style="display: none;">🔄 Analyzing...</span>
+          </button>
+        </form>
+
+        {% if result %}
+        <div class="result-section">
+          <h3 class="result-title">Analysis Result</h3>
+          <div class="prediction-result 
+            {% if result == 'normal' %}prediction-safe{% else %}prediction-flagged{% endif %}">
+            <span>
+              {% if result == 'normal' %}
+              ✅ Safe Content
+              {% elif result == 'offensive' %}
+              ⚠️ Offensive Content
+              {% elif result == 'hate' %}
+              🚫 Hate Speech Detected
+              {% else %}
+              ⚠️ {{ result|title }}
+              {% endif %}
+            </span>
+          </div>
+
+          {% if explanation %}
+          <div class="explanation-section">
+            <div class="explanation-title">🔍 Key Words Identified:</div>
+            <div class="explanation-words">{{ explanation|join(', ') }}</div>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- History Section -->
+      <div class="history-section fade-in">
+        <h2 class="section-title">📊 Analysis History</h2>
+        <p class="section-description">
+          Review your previous analyses and track patterns in your content over time.
+        </p>
+
+        <div class="history-grid">
+          {% if history %}
+          {% for item in history %}
+          <div class="history-item">
+            <div class="history-text">
+              "{{ item.tweet_text }}"
+            </div>
+            <div class="history-result">
+              <span class="history-label {{ 'label-safe' if item.predicted_label == 'normal' else 'label-flagged' }}">
+                {% if item.predicted_label == 'normal' %}
+                ✅ Safe Content
+                {% elif item.predicted_label == 'offensive' %}
+                ⚠️ Offensive Content
+                {% elif item.predicted_label == 'hate' %}
+                🚫 Hate Speech Detected
+                {% else %}
+                ⚠️ {{ item.predicted_label|title }}
+                {% endif %}
+              </span>
+            </div>
+            {% if item.explanation_words %}
+            <div class="history-explanation">
+              <strong>🔍 Key words:</strong> {{ item.explanation_words }}
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="no-history">
+            <p>✨ No analysis history yet. Start by analyzing some text above!</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Intersection Observer for fade-in animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all fade-in elements
+    document.querySelectorAll('.fade-in').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Dynamic navbar background
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 100) {
+        nav.style.background = 'rgba(10, 10, 10, 0.95)';
+      } else {
+        nav.style.background = 'rgba(10, 10, 10, 0.8)';
+      }
+    });
+
+    // Add loading state to form submission
+    const form = document.getElementById('analysisForm');
+    const btn = document.getElementById('analyzeBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoading = document.getElementById('btnLoading');
+
+    form.addEventListener('submit', function () {
+      form.classList.add('loading');
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline';
+      btn.disabled = true;
+    });
+
+    // Auto-resize textarea
+    const textarea = document.getElementById('text');
+    textarea.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.max(120, this.scrollHeight) + 'px';
+    });
+
+    // Add some particle effects for extra flair
+    function createParticle() {
+      const particle = document.createElement('div');
+      particle.style.cssText = `
+        position: fixed;
+        width: 4px;
+        height: 4px;
+        background: #4ecdc4;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: -1;
+        animation: float 6s ease-in-out infinite;
+        left: ${Math.random() * 100}%;
+        top: 100%;
+        opacity: 0.6;
+      `;
+      document.body.appendChild(particle);
+      
+      setTimeout(() => {
+        particle.remove();
+      }, 6000);
+    }
+
+    // Create particles occasionally
+    setInterval(createParticle, 3000);
+
+    // CSS for particle animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes float {
+        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.6; }
+        90% { opacity: 0.6; }
+        100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

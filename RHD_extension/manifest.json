@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Kinyarwanda Hate Speech Detector",
+  "version": "1.0",
+  "description": "Detect hate speech in Kinyarwanda text on web pages",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "http://127.0.0.1:5000/*",
+    "https://kinyarwanda-hatespeech-detection.onrender.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Analyze Text"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}

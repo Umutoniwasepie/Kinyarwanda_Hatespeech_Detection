@@ -1,0 +1,16 @@
+Flask
+gunicorn
+flask_sqlalchemy
+flask_login
+flask_mail
+werkzeug
+joblib
+numpy
+sqlalchemy
+dotenv
+scikit-learn
+Flask-Dance
+flask-limiter
+flask_cors
+flask_session
+authlib

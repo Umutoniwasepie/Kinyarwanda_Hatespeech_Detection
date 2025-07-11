@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kinyarwanda Hate Speech Checker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #e5e7eb;
+      background: #0a0a0a;
+      padding: 20px;
+      width: 350px;
+      min-height: 400px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated background matching verify page */
+    .bg-animation {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: radial-gradient(circle at 20% 80%, #ff6b6b22 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, #4ecdc422 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, #45b7d122 0%, transparent 50%);
+      animation: bgShift 15s ease-in-out infinite;
+    }
+
+    @keyframes bgShift {
+      0%, 100% { 
+        background: radial-gradient(circle at 20% 80%, #ff6b6b22 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, #4ecdc422 0%, transparent 50%),
+                    radial-gradient(circle at 40% 40%, #45b7d122 0%, transparent 50%);
+      }
+      33% { 
+        background: radial-gradient(circle at 60% 10%, #ff6b6b22 0%, transparent 50%),
+                    radial-gradient(circle at 10% 60%, #4ecdc422 0%, transparent 50%),
+                    radial-gradient(circle at 90% 90%, #45b7d122 0%, transparent 50%);
+      }
+      66% { 
+        background: radial-gradient(circle at 90% 30%, #ff6b6b22 0%, transparent 50%),
+                    radial-gradient(circle at 30% 90%, #4ecdc422 0%, transparent 50%),
+                    radial-gradient(circle at 10% 10%, #45b7d122 0%, transparent 50%);
+      }
+    }
+
+    /* Floating particles */
+    .hero-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #4ecdc4;
+      border-radius: 50%;
+      animation: float 8s ease-in-out infinite;
+      opacity: 0.3;
+    }
+
+    .particle:nth-child(1) { left: 15%; animation-delay: 0s; background: #ff6b6b; }
+    .particle:nth-child(2) { left: 35%; animation-delay: 1s; background: #4ecdc4; }
+    .particle:nth-child(3) { left: 55%; animation-delay: 2s; background: #45b7d1; }
+    .particle:nth-child(4) { left: 75%; animation-delay: 3s; background: #ff6b6b; }
+    .particle:nth-child(5) { left: 85%; animation-delay: 4s; background: #4ecdc4; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(100vh) rotate(0deg); }
+      50% { transform: translateY(-50px) rotate(180deg); }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      animation: slideIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes slideIn {
+      from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.95); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+      }
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+      opacity: 0.3;
+      z-index: -1;
+    }
+
+    .container::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+      z-index: 1;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 0.75rem;
+      font-weight: 900;
+      color: white;
+      animation: pulse 2s ease-in-out infinite;
+      box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
+    }
+
+    @keyframes pulse {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
+      }
+      50% { 
+        transform: scale(1.05);
+        box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
+      }
+    }
+    
+    h3 {
+      background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 15px rgba(78, 205, 196, 0.3)); }
+      to { filter: drop-shadow(0 0 20px rgba(255, 107, 107, 0.4)); }
+    }
+
+    .subtitle {
+      color: #9ca3af;
+      font-size: 0.8rem;
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+    }
+    
+    #analyzeBtn {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: 100%;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+    }
+
+    #analyzeBtn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    #analyzeBtn:hover:not(:disabled)::before {
+      left: 100%;
+    }
+    
+    #analyzeBtn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+    }
+    
+    #analyzeBtn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    #analyzeBtn:disabled {
+      background: rgba(107, 114, 128, 0.3);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      color: #6b7280;
+    }
+    
+    #result {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.9rem;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #result::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #result:not(:empty)::before {
+      opacity: 1;
+    }
+
+    #result:hover:not(:empty) {
+      border-color: rgba(78, 205, 196, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .safe {
+      color: #10b981;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: inline-block;
+      backdrop-filter: blur(10px);
+    }
+    
+    .flagged {
+      color: #f87171;
+      font-weight: 600;
+      background: rgba(239, 68, 68, 0.1);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      display: inline-block;
+      backdrop-filter: blur(10px);
+    }
+
+    .result-content {
+      line-height: 1.6;
+    }
+
+    .result-content strong {
+      color: #f3f4f6;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .top-words {
+      color: #9ca3af;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    #result:empty::after {
+      content: "Select text on the page and click analyze to get started";
+      color: #6b7280;
+      font-style: italic;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .loading {
+      color: #4ecdc4;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .loading::before {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(78, 205, 196, 0.3);
+      border-top: 2px solid #4ecdc4;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error {
+      color: #f87171;
+      font-weight: 500;
+      background: rgba(239, 68, 68, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .warning {
+      color: #fcd34d;
+      font-weight: 500;
+      background: rgba(245, 158, 11, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-animation"></div>
+  
+  <div class="hero-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo">KinyaAI</div>
+      <h3>Hate Speech Checker</h3>
+      <p class="subtitle">Analyze text for harmful content detection</p>
+    </div>
+    
+    <button id="analyzeBtn">Analyze Highlighted Text</button>
+    <div id="result"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

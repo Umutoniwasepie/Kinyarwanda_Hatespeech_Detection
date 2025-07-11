@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/moderator_dashboard.css') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <title>Moderator Dashboard - Kinyarwanda Hate Speech Detection</title>
+</head>
+<body>
+  <div class="bg-animation"></div>
+  <div class="header">
+    <div class="header-content">
+      <h1 class="header-title">
+        🛡️ KinyaAI Moderator
+      </h1>
+      <div class="header-actions">
+        <a href="{{ url_for('export_flagged') }}" class="header-btn export">
+          📊 Export CSV
+        </a>
+        <a href="{{ url_for('logout') }}" class="header-btn danger">
+          🚪 Logout
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Welcome Section -->
+    <div class="welcome-section fade-in">
+      <h2 class="welcome-title">Content Moderation Command Center</h2>
+      <p class="welcome-description">
+        Monitor and analyze hate speech detection across your platform. Track user behavior,
+        review flagged content, and maintain a safe digital environment for your community.
+      </p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-section fade-in">
+      <h2 class="section-title">📈 Overview Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.total_users }}</div>
+          <div class="stat-label">Registered Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.total_flagged }}</div>
+          <div class="stat-label">Flagged Content</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.flagged_week }}</div>
+          <div class="stat-label">This Week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.flagged_percentage | round(1) }}%</div>
+          <div class="stat-label">Flagged Rate</div>
+        </div>
+      </div>
+
+      <!-- Detailed Stats -->
+      <div class="detailed-stats">
+        <div class="detail-card">
+          <h3>📊 Flagged by Label</h3>
+          <ul class="detail-list">
+            {% for label, count in stats.counts_by_label.items() %}
+            <li>
+              <span>{{ label }}</span>
+              <span class="detail-value">{{ count }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="detail-card">
+          <h3>👥 Top 5 Users</h3>
+          <ul class="detail-list">
+            {% for username, count in stats.top_users %}
+            <li>
+              <span>{{ username }}</span>
+              <span class="detail-value">{{ count }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="detail-card">
+          <h3>💬 Top Flagged Words</h3>
+          <ul class="detail-list">
+            {% for word, freq in stats.top_words %}
+            <li>
+              <span>{{ word }}</span>
+              <span class="detail-value">{{ freq }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flagged Content Section -->
+    <div class="flagged-section fade-in">
+      <div class="flagged-header">
+        <h2>⚠️ Flagged Content</h2>
+      </div>
+      <div class="flagged-content">
+        {% if flagged %}
+        {% for item, username in flagged %}
+        <div class="flagged-item">
+          <div class="flagged-meta">
+            <span class="user-id">
+              {% if username %}
+              {{ username }}
+              {% else %}
+              Anonymous
+              {% endif %}
+            </span>
+            <span class="timestamp">{{ item.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+          </div>
+          <div class="flagged-text">{{ item.tweet_text }}</div>
+          <div class="flagged-details">
+            <span class="label-badge">{{ item.predicted_label }}</span>
+            {% if item.explanation_words %}
+            <span class="explanation">Explanation: {{ item.explanation_words }}</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-flagged">
+          <h3>✅ No flagged content found!</h3>
+          <p>All content is safe and within guidelines.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <script>
+      // Intersection Observer for fade-in animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      // Observe all fade-in elements
+      document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+      });
+
+      /* Uncomment this section to enable sticky header:
+      
+      // Dynamic navbar background for sticky header
+      window.addEventListener('scroll', () => {
+        const header = document.querySelector('.header');
+        if (window.scrollY > 100) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      });
+      
+      // Add padding to body to account for fixed header
+      document.body.style.paddingTop = '0'; // Change to header height when sticky
+      
+      */
+
+      // Add some particle effects for extra flair
+      function createParticle() {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+        position: fixed;
+        width: 4px;
+        height: 4px;
+        background: #4ecdc4;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: -1;
+        animation: float 6s ease-in-out infinite;
+        left: ${Math.random() * 100}%;
+        top: 100%;
+        opacity: 0.6;
+      `;
+        document.body.appendChild(particle);
+
+        setTimeout(() => {
+          particle.remove();
+        }, 6000);
+      }
+
+      // Create particles occasionally
+      setInterval(createParticle, 3000);
+    </script>
+</body>
+</html>

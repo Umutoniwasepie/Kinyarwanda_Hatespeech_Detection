@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <title>Login - Kinyarwanda Hate Speech Detection</title>
+</head>
+<body>
+  <div class="bg-animation"></div>
+  
+  <div class="login-particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div class="login-container">
+    <div class="login-header">
+      <h2>Welcome Back</h2>
+      <p>Sign in to continue your journey</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+    <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endwith %}
+
+    {% if google_auth_enabled %}
+    <div class="google-auth-section">
+      <a href="{{ url_for('auth_google') }}" class="google-login-btn">
+        <div class="google-icon"></div>
+        Continue with Google
+      </a>
+    </div>
+    {% else %}
+    <div class="google-auth-disabled">
+      <p>Google authentication is currently unavailable</p>
+    </div>
+    {% endif %}
+
+    <div class="divider">or</div>
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      </div>
+
+      <button type="submit">Sign In</button>
+    </form>
+    <div>
+            <p><a href="{{ url_for('forgot_password') }}">Forgot Password?</a></p>
+        </div>
+
+    <div class="register-link">
+      <p>Don't have an account?</p>
+      <a href="{{ url_for('register') }}">Create one here</a>
+    </div>
+  </div>
+
+  <script>
+    // Add subtle input focus animations
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.style.transform = 'translateY(-2px)';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+
+    // Add form submission animation
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const submitBtn = this.querySelector('button[type="submit"]');
+      submitBtn.style.transform = 'scale(0.95)';
+      submitBtn.innerHTML = 'Signing In...';
+      
+      setTimeout(() => {
+        submitBtn.style.transform = 'scale(1)';
+      }, 150);
+    });
+
+    // Add typing animation for placeholder text
+    function typeWriter(element, text, speed = 50) {
+      let i = 0;
+      const placeholder = element.getAttribute('placeholder');
+      element.setAttribute('placeholder', '');
+      
+      function type() {
+        if (i < text.length) {
+          element.setAttribute('placeholder', element.getAttribute('placeholder') + text.charAt(i));
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+      type();
+    }
+
+    // Initialize typing animation when page loads
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        
+        if (usernameInput && passwordInput) {
+          typeWriter(usernameInput, 'Enter your username');
+          setTimeout(() => {
+            typeWriter(passwordInput, 'Enter your password');
+          }, 1000);
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>
