@@ -6,7 +6,7 @@ A machine learning-powered app that detects **hate**, **offensive**, or **normal
 
 ## 🚀 Features
 
-- ✅ Detects `hate`, `offensive`, or `normal` content in Kinyarwanda
+- ✅ Detects `hate`, `sarcasm`, or `normal` content in Kinyarwanda
 - 🧠 Trained with Logistic Regression + TF-IDF
 - 📊 Balanced dataset for fair classification
 - 🌐 Web interface for testing input text
@@ -66,8 +66,8 @@ project/
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/Olamieee/kinyarwanda-hate-speech-app.git
-cd kinyarwanda-hate-speech-app
+git clone https://github.com/Umutoniwasepie/Kinyarwanda_Hatespeech_Detection.git
+cd kinyarwanda_Hatespeech_Detection
 ```
 
 ### Step 2: Create Virtual Environment
@@ -134,7 +134,7 @@ Visit the app at `http://localhost:5000` (default Flask port).
 - **Algorithm**: Logistic Regression (sklearn)
 - **Feature Extraction**: TF-IDF (1–3 grams)
 - **Accuracy**: ~95% on test data
-- **Classes**: `hate`, `offensive`, `normal`
+- **Classes**: `hate`, `sarcasm`, `normal`
 
 ---
 
@@ -142,7 +142,7 @@ Visit the app at `http://localhost:5000` (default Flask port).
 Watch the 5-minute demo [here](https://screenrec.com/share/lrk6diKSvR).
 
 ## Deployed App
-Access the live tool: [Website URL](https://kinyarwanda-hatespeech-detection.onrender.com/)
+Access the live tool: [Website URL](https://kinyaai.up.railway.app/)
 
 ---
 
@@ -175,13 +175,6 @@ Our initial project proposal aimed to create a hate speech detection system that
 | Integrate real-time Chrome extension  | ✅ Achieved | Users can highlight text on any website and instantly analyze it via the extension.       |
 | Deploy and test machine learning model| ✅ Achieved | The hate speech classifier returns results in a short time on average.                   |
 | Test the system under different input types and environments | ✅ Achieved | Testing included normal text, hate speech, and sarcastic cases. |
-
-## ⚠️ Missed / Partially Achieved Objectives
-
-| Objective                  | Status               | Explanation                                                                                                          |
-|----------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------|
-| Sarcasm detection | ❌ Not achieved      | It's still tricky when It comes to sarcastic/joke/edge cases. The model is flagging sarcasm as hate speech, and the next step is working on improving that particular functionality. |
-
 
 ---
 
